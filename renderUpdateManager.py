@@ -68,7 +68,7 @@ def demandGoingFurther(atPath, firstTime):
 
 def timestampOfFolderORFileInFolder(fullPath):
     fileList = glob.glob(fullPath + "/" + "*.tif")
-    if (len(fileList) == 0):
+    if (len(fileList) < 5):
         #print("This folder " + fullPath + " we expected to have frames... but did not")
         return None
     else:
@@ -221,33 +221,40 @@ def compositeFramesInFolder(pathWithShots, outputToFolder, shortName):
     if not pathWithShots.endswith('/'):
         pathWithShots += "/"
 
-    fileList = frameSequenceTools.orderedFrames(glob.glob(pathWithShots + "*.tif"), shortName)
+
+    frameSequence = frameSequenceTools.orderedFrames(glob.glob(pathWithShots + "*.tif"), shortName)
+    fileList = frameSequence["Frames"]
 
     if (len(fileList) == 0):
         print("FOR SOME REASON FOUND 0 images at " + pathWithShots)
         print("We will therefore skip this")
-        return
+        return None
 
-    firstimg = cv2.imread(fileList[0])
-    size = (firstimg.shape[1], firstimg.shape[0])
-
-
-    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-    out = cv2.VideoWriter(outputToFolder, fourcc, 24.0, size, True)
-    assert(out != None)
-    for filename in fileList:
+    try:
+        firstimg = cv2.imread(fileList[0])
+        size = (firstimg.shape[1], firstimg.shape[0])
 
 
-        img = cv2.imread(filename)
-        out.write(img)
+        fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+        out = cv2.VideoWriter(outputToFolder, fourcc, 24.0, size, True)
+        assert(out != None)
+        for filename in fileList:
 
-    out.release()
-    out = None
-    return ""
+
+            img = cv2.imread(filename)
+            out.write(img)
+
+        out.release()
+        out = None
+        return frameSequence["Suspicion"]
+    except:
+        print("Some form of exception... skipping")
+        return None
 
 import safety
 
 maxDict = {}
+failedList = []
 for render in renderList:
     folder = render["Folder"]
     path = render["Path"]
@@ -257,15 +264,25 @@ for render in renderList:
 
     safety.safetyAsserts(outputPath)
 
-    compositeFramesInFolder(path, outputPath, shot + "/" + folder)
+    potentialCorruption = compositeFramesInFolder(path, outputPath, shot + "/" + folder)
+
+    if (potentialCorruption == None):
+        # Some form of error need to retry
+        failedList.append(render)
+        continue
+
     if (not shot in maxDict):
-        maxDict[shot] = {"ts":timestamp, "path":outputPath}
+        maxDict[shot] = {"ts":timestamp, "path":outputPath, "corrupted":potentialCorruption}
     else:
         prev = maxDict[shot]["ts"]
-        if (timestamp > prev):
-            maxDict[shot] = {"ts":timestamp, "path":outputPath}
+        previousCorrupted = maxDict[shot]["corrupted"]
+        greaterTimestamp = timestamp > prev
+        if ((potentialCorruption and previousCorrupted and greaterTimestamp) or (not potentialCorruption and (previousCorrupted or greaterTimestamp))):
+            maxDict[shot] = {"ts":timestamp, "path":outputPath, "corrupted":potentialCorruption}
 
 
+for render in failedList:
+    print("Render " + render + " FAILED! ")
 
 
 putShotsInCapstoneFolder = getNextArgOrAsk("Put these renders in the capstone folder? {y/n}")
@@ -273,6 +290,9 @@ if (putShotsInCapstoneFolder == "y"):
     for shot in maxDict:
         pathToPutIn = directory + shot + "/" + shot + "_ren.mp4"
         pathItIsAt = maxDict[shot]["path"]
+
+        if (maxDict[shot]["corrupted"]):
+            print("We had to put a corrupted shot at " + pathToPutIn + " probably replace this later if you can")
 
         # SAFETY ASSERTS
         safety.safetyAsserts(pathToPutIn)

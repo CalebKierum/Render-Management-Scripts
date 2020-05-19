@@ -2,8 +2,6 @@ import os
 def safetyAsserts(pathToWriteTo):
     lastBit = pathToWriteTo.split("/")[-1]
     directory = "/".join(pathToWriteTo.split("/")[:-1])
-    print(lastBit)
-    print(directory)
 
     # Directory exists
     assert(os.path.exists(directory))

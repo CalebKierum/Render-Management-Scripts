@@ -44,14 +44,23 @@ def orderedFrames(frames, printNM):
     for shot in sort:
         build.append(shot["path"])
 
+
+    suspicion = False
+
     if (suspiciouslyFewFrames):
+        suspicion = True
         print(printNM + " had suspiciously few frames " + str(minimum) + "-" + str(maximum))
 
     if (len(suspiciouslyMissing) != 0):
+        suspicion = True
         print(printNM + " suspiciously missing frames: " + str(suspiciouslyMissing))
 
     if (len(suspiciouslySmall) != 0):
+        suspicion = True
         print(printNM + " has some frames with suspiciously small sizes may be corrupted " + str(sorted(suspiciouslySmall)))
 
-    return build
+    if (suspicion):
+        print()
+
+    return {"Frames": build, "Suspicion":suspicion}
 
