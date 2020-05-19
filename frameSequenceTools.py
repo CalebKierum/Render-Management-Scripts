@@ -18,7 +18,7 @@ def orderedFrames(frames, printNM):
             theInt = int(numString)
 
         size = os.path.getsize(frame)
-        if (size < 1000000):
+        if (size < 200000):
             suspiciouslySmall.append(theInt)
 
         temp.append({"path": frame, "int": theInt})

@@ -245,7 +245,7 @@ def compositeFramesInFolder(pathWithShots, outputToFolder, shortName):
     out = None
     return ""
 
-import safetyAsserts
+import safety
 
 maxDict = {}
 for render in renderList:
@@ -255,7 +255,7 @@ for render in renderList:
     shot = render["shot"]
     outputPath = outputFolder+shot+"_" +folder + ".mp4"
 
-    safetyAsserts.safetyAsserts(outputPath)
+    safety.safetyAsserts(outputPath)
 
     compositeFramesInFolder(path, outputPath, shot + "/" + folder)
     if (not shot in maxDict):
@@ -275,7 +275,7 @@ if (putShotsInCapstoneFolder == "y"):
         pathItIsAt = maxDict[shot]["path"]
 
         # SAFETY ASSERTS
-        safetyAsserts.safetyAsserts(pathToPutIn)
+        safety.safetyAsserts(pathToPutIn)
 
         copyfile(pathItIsAt, pathToPutIn)
 
