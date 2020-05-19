@@ -1,0 +1,3094 @@
+/*
+// ____________________________________________________________________ 
+//
+// Copyright (C) 2011-2012 Pixar Animation Studios. All rights reserved.
+//
+// The information in this file is provided for the exclusive use of the
+// software licensees of Pixar.  It is UNPUBLISHED PROPRIETARY SOURCE CODE
+// of Pixar Animation Studios; the contents of this file may not be disclosed
+// to third parties, copied or duplicated in any form, in whole or in part,
+// without the prior written permission of Pixar Animation Studios.
+// Use of copyright notice is precautionary and does not imply publication.
+//
+// PIXAR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+// ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT
+// SHALL PIXAR BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES
+// OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+// WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+// ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+// SOFTWARE.
+// ____________________________________________________________________ 
+//
+*/
+html {
+    overflow: hidden;
+}
+
+body {
+    font-family:"Lucida Sans Unicode","Lucida Grande","Helvetica","Arial","sans-serif";
+    font-size:12px;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    /* in general, prevent text selection */
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+ul {
+    margin: 0;   /* get rid of top and bottom margin overflows on divs */
+    padding: 0;  /* get rid of indentation of list items */
+}
+
+li {
+    list-style: none; /* get rid of default dot before list items */
+    display: block; /* keep items one under another */
+}
+
+#tabButtons {
+    padding-top: 3px;
+    padding-left: 3px;
+}
+
+#aboutTabButton {
+    background-image: url(../images/pixartractor.png);
+    width: 33px;
+    height: 25px;
+    margin-left: 5px;
+    padding-right: 30px;
+}
+
+#aboutTabBody {
+    height: 100%;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#jobTabButton {
+    background-image: url(../images/jobgraph.png);
+    width: 23px;
+    height: 25px;
+    margin-left: 5px;
+    padding-right: 10px;
+}
+
+#bladeTabButton {
+    background-image: url(../images/servers.png);
+    width: 26px;
+    height: 25px;
+    padding-right: 10px;
+}
+
+#dbTabButton {
+    background-image: url(../images/searchlist.png);
+    width: 24px;
+    height: 25px;
+    margin-left: 5px;
+    padding-right: 10px;
+}
+
+#reportsTabButton {
+    background-image: url(../images/reports.png);
+    width: 25px;
+    height: 25px;
+    margin-left: 5px;
+    padding-right: 10px;
+}
+
+#metersTabButton {
+    background-image: url(../images/chart.png);
+    width: 25px;
+    height: 25px;
+    padding-right: 10px;
+}
+
+#adminTabButton {
+    background-image: url(../images/gears25.png);
+    width: 18px;
+    height: 25px;
+    padding-right: 10px;
+}
+
+#docsButton {
+    background-image: url(../images/book4.png);
+    width: 27px;
+    height: 20px;
+    margin-top: 3px;
+    padding-right: 10px;
+    margin-left: 20px;
+    float: right;
+}
+
+#docsTabButton {
+    background-image: url(../images/book4.png);
+    width: 27px;
+    height: 20px;
+    margin-top: 3px;
+    padding-right: 10px;
+    margin-left: 20px;
+    float: right;
+}
+
+#presetsButton {
+    background-image: url(../images/presets_button.png);
+    width: 30px;
+    height: 30px;
+    float: right;
+}
+
+.soloButton {
+    background-repeat: no-repeat;
+    opacity: 0.4;
+    filter: alpha(opacity=0.4);
+}
+
+.soloButton:hover {
+    opacity: 0.8;
+    filter: alpha(opacity=0.8);
+}
+
+.soloButton:active {
+    opacity: 1;
+    filter: alpha(opacity=1);
+}
+
+.tabButton {
+    background-repeat: no-repeat;
+    opacity: 1;
+    filter: alpha(opacity=1);
+    float: left;
+    margin-right: 10px;
+}
+
+.unselectedTabButton {
+    opacity: 0.4;
+    filter: alpha(opacity=0.4);
+}
+
+.tabButton:hover {
+    cursor: pointer;
+    opacity: 0.8;
+    filter: alpha(opacity=0.8);
+}
+
+.tabButton:active {
+    opacity: 1.0;
+    filter: alpha(opacity=1.0);
+}
+
+#appHeader {
+    /* this div is always visible at top of window */
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    width: 100%;
+    height: 32px;
+    overflow: hidden;
+    background-color: #111; /* debugging bg color */
+}
+
+#appHeaderLeftCorner {
+    position: absolute;
+    left: 0;
+    width: 420px; /* needs to be wide enough to hold tab buttons and docs button */
+    float: left;
+}
+
+#appHeaderMiddle {
+    margin: 0 400px 0 370px; /* set right and left margins to account for right and left corners */
+    color: white;
+}
+
+#appHeaderRightCorner {
+    bottom: 0px;
+}
+
+#loginNameButton {
+    color: #fff;
+    opacity: 0.7;
+    filter: alpha(opacity=0.7);
+    font-size: 10px;
+    float: right;
+    margin-top: 0px;
+    margin-left: 10px;
+    margin-right: 6px;
+    border: 1px solid black;
+}
+
+#loginNameButton.menuOpen {
+    opacity: 1.0;
+    filter: alpha(opacity=1.0);
+}
+
+#loginNameButton:hover {
+    opacity: 0.8;
+    filter: alpha(opacity=0.8);
+}
+
+#loginNameButton:active {
+    opacity: 1.0;
+    filter: alpha(opacity=1.0);
+}
+
+#loginNameButton>div {
+    float: right;
+}
+
+#loginNameText {
+    margin-top: 8px;
+    margin-right: 5px;
+}
+
+#loginIcon {
+    margin-top: 2px;
+    background-image: url(../images/user.png);
+    width: 32px;
+    height: 24px; /* for some reason there is one pixel wrap-around when the height is set to 25px (which is what "file user.png" shows. */
+}
+
+.lightTriangle {
+    background-image: url(../images/light_triangle.png);
+    width: 16px;
+    height: 14px;
+    float: left;
+}
+
+#appBody { 
+    overflow: hidden;
+    position: absolute;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #333;
+    width: 100%;
+    top: 32px; /* == appHeader.height */
+    bottom: 0px; /* == #appFooter.height */
+    background-color: #222;
+}
+
+#jobTabHeaderOuter {
+    display: inline;
+    float: right;
+}
+
+#tabHeader {
+    height: 30px;
+    float: right;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #333;
+}
+
+#systemStatus {
+    float: left;
+    margin-left: 80px;
+    margin-top: 2px;
+    color: #F33;
+    border: 1px solid #F33;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px; 
+    border-radius: 5px;
+    padding: 4px;
+}
+
+/* make text input rounded rectangle */
+
+button {
+    color: white;
+    background: black; /* for non-webkit browsers */
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#222222));
+    background: -moz-linear-gradient(top,  #555,  #222);
+    border: 1px solid gray;
+}    
+
+button:hover {
+    color: #BBB;
+    background: #888;
+    background: -webkit-gradient(linear, left top, left bottom, from(#888888), to(#555555));
+    background: -moz-linear-gradient(top,  #888,  #555);
+}
+
+button:active {
+    color: #111;
+    background: #BBB;
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#888888));
+    background: -moz-linear-gradient(top,  #555,  #888);
+}
+
+.sustain {
+    color: black;
+    background: white;
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#888888));
+    background: -moz-linear-gradient(top,  #555,  #888);
+}
+
+.blurry {
+    color: #555;
+}
+
+#logoutMenu {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    border: 2px solid #444;
+    border-top-style: none;
+    background-color: #111;
+    display: none;
+    z-index: 10;
+}
+
+#logoutMenuItem:hover {
+    background-color: #A00;
+}
+
+.menuItem {
+    color: #CCC;
+    background-color: #222;
+}
+
+.menuItem:hover {
+    color: #EEE;
+    background-color: #444;
+}
+
+.dim {
+    opacity: 0.6;
+    filter: alpha(opacity=0.6);
+}
+
+#searchInput {
+    width: 175px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px; 
+    border-radius: 10px;
+    margin-top: 5px;
+    margin-right: 5px;
+    float: right;
+}
+
+#searchInput:hover {
+    opacity: 0.8;
+    filter: alpha(opacity=0.8);
+}
+
+.itemCounter {
+    font-size: 10px;
+    float: left;
+    color: #DDD;
+    margin-right: 20px;
+    margin-top: 10px;
+}
+
+.centerDivOuter {
+    display: table;
+    height: 100%;
+    width: 100%;
+    /* position: relative; */
+    position: absolute;
+    top: 0px;
+    overflow: hidden;
+}
+
+.centerDivMiddle {
+    position: absolute;
+    top: 50%; 
+    width: 100%;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.centerDivInner {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    top: -50%;
+}
+
+.jobGraphSpinner {
+    background-image: url(../images/jobGraphSpinner.gif);
+    width: 24px;
+    height: 24px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.counterSpinner {
+    background-image: url(../images/counterSpinner.gif);
+    width: 16px;
+    height: 16px;
+    margin-top: 8px;
+    margin-right: 30px;
+    margin-left: 20px;
+}
+
+.tractorLink { 
+    color: #DDD; 
+    text-decoration: underline; 
+}
+
+.tractorLink:hover {
+    color: #BBB; 
+}
+
+.tractorLinkAlert { 
+    color: yellow; 
+    text-decoration: underline; 
+}
+
+.tractorLinkAlert:hover {
+    color: #ff8; 
+}
+
+li>.tractorLink { 
+    color: #222; 
+    text-decoration: underline; 
+}
+
+li>.tractorLink:hover {
+    color: #444; 
+}
+
+#docs {
+    width: 100%;
+    height: 100%;
+    background: blue;
+}
+
+#prefsWrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+#prefsBorder {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    opacity: 0.66;
+    filter: alpha(opacity=0.1);
+    background: #000;
+}
+
+#prefsArea {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    color: #aaa;
+    opacity: 1.0;
+    filter: alpha(opacity=1.0);
+    background: #222;
+    border: 2px solid #444;
+}
+
+#prefsArea .scrollContent {
+    padding: 10px;
+}
+
+#closePrefsButton {
+    position: absolute;
+    top: 10px;
+    right: 24px;
+}
+
+#engineLogButton {
+    background-image: url(../images/logfile.png);
+    width: 28px;
+    height: 25px;
+    margin-right: 10px;
+    float: left;
+}
+
+#engineLogLabel {
+    padding-top: 5px;
+}
+
+.confirmButtonYes {
+    /* creates an affordance that enter means yes */
+    border-color: #999;
+    -moz-box-shadow: 0px 0px 4px #ffffff;
+    -webkit-box-shadow: 0px 0px 4px #ffffff;
+    box-shadow: 0px 0px 4px #ffffff;
+}
+
+/* this will allow safari users to edit text; put in place for job and blade note entries */
+*[contenteditable] {
+    -webkit-user-select: auto !important;
+}
+
+/* stop annoying formatting of threads field in engine status panel */
+.qthreadsValue {
+    white-space: normal !important; /* wrap the long output of the thread details */
+}
+
+#engineStatusPanel .itemInfoKey {
+    white-space: nowrap !important; /* don't wrap the keys in the left column */
+}
+#multiJobInfo { 
+    /* this div has multiple functions, such as showing the details of the selected job or task */
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+    overflow: hidden;
+}
+.grid-canvas {
+    font-size: 12px;
+}
+
+/* cell formatting */
+/* --------------- */
+
+.slick-cell {
+    border-color: #181818;   /* have a soft-colored border around cells */
+    border-top-width: 0px;   /* top border makes row separation too thick */
+    border-bottom-width: 1px;/* only show bottom border at 1px */
+    border-right-width: 1px; /* only show right border at 1px */
+    border-left-width: 0px;  /* remove left border for cleaner look */
+}
+
+.text-active {
+    color: #8F8;
+}
+
+.text-error {
+    color: #F44;
+}
+
+.right-justify {
+    text-align: right;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.align-left {
+    text-align: left;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.auto-width {
+    width: auto;
+}
+
+.filler-column {
+    background: #222;
+}
+
+/* header formatting */
+/* ----------------- */
+
+.slick-header.ui-state-default {
+    /* slick-header is class of outer div holding all columns */
+    border-top-color: #444;
+    border-bottom-color: #222;
+}
+
+.slick-header.ui-state-hover {
+    background: #338;
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#222222));
+    background: -moz-linear-gradient(top,  #555,  #222);
+}
+
+.slick-header-columns {
+    /* slick-header-columns is class of innder div holding all columns */
+    border-color: #444;
+}
+
+.slick-header-column {
+    /* slick-header-column is in classes of each column's header */
+    color: #EEE;
+    background: #333;
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#222222));
+    background: -moz-linear-gradient(top,  #555,  #222);
+}
+
+.slick-header-column:hover {
+    background: #44A;
+}
+
+.slick-header-column.ui-state-default {
+    border-right-color: #666; /* color of the column resize handles */
+}
+
+.slick-resizable-handle {
+    border-color: red;
+    width: 8px;
+}
+
+
+/* row formatting */
+/* -------------- */
+
+.slick-row {
+    background: #333;
+    color: #CCC;
+    white-space: nowrap; /* prevents a row becoming two when font size changes */
+}
+
+.slick-row.noborder {
+    border-color: #000; /* keep a black border around row */
+}
+
+.slick-row.rowtext {
+    color: #AAA;       /* default text color in row */
+}
+
+.slick-row.incomplete {
+    background-color: #232323;
+}
+
+.slick-row.incomplete:hover {
+    background: #292929;
+}
+
+.slick-row.blocked {
+    background-color: #212121;
+}
+
+.slick-row.blocked:hover {
+    background-color: #262626;
+}
+
+.slick-row.active {
+    /*background-color: #253C25;*/
+    background-color: #0C2811;
+}
+
+.slick-row.active:hover {
+    /* background-color: #314431; */
+    background-color: #123016;
+}
+
+.slick-row.error {
+    background-color: #341010;
+}
+
+.slick-row.error:hover {
+    background-color: #3A1818;
+}
+
+.slick-row.willnotcomplete {
+    background-color: #341010;
+}
+
+.slick-row.willnotcomplete:hover {
+    background-color: #3A1818;
+}
+
+.slick-row.done {
+    color: #777;
+    background-color: #323232;
+}
+
+.slick-row.done:hover {
+    background-color: #393939;
+}
+
+.slick-row.paused {
+    color: #AAA;
+    background-color: #1A1A1A;
+}
+
+.slick-row.paused:hover {
+    background-color: #1E1E1E;
+}
+
+.slick-row.pendingdelete {
+    background-color: #080808;
+}
+
+.slick-row.pendingdeleteFG {
+    color: #444;
+}
+
+.slick-row.archived {
+    background-color: #888;
+    color: #000;
+}
+
+.slick-row.archived:hover {
+    color: #000;
+    background-color: #AAA;
+}
+
+.slick-row.busyBlade { background-color: #0C2814; }
+.slick-row.busyBlade:hover { background-color: #123019; }
+.slick-row.selected.busyBlade { background-color: #203C25; }
+.slick-row.selected.busyBlade:hover { background: #25432A; }
+
+.slick-row.idleBlade {
+    background-color: #333;
+}
+
+.slick-row.idleBlade:hover {
+    background-color: #444;
+}
+
+.slick-row.downBlade {
+    background-color: #000;
+}
+
+.slick-row.downBlade:hover {
+    background-color: #222;
+}
+
+.slick-row.selected {
+    color: #EEE;
+    background: #445;
+}
+
+.slick-row.selected:hover {
+    background: #494959;
+}
+
+/* variant colors for rows that have been selected  */
+.slick-row.selected.done { background-color: #535353; }
+.slick-row.selected.done:hover { background: #595959; }
+.slick-row.selected.incomplete { background-color: #474747; }
+.slick-row.selected.incomplete:hover { background: #4B4B4B; }
+.slick-row.selected.blocked { background-color: #323232; }
+.slick-row.selected.blocked:hover { background: #393939; }
+.slick-row.selected.paused { background-color: #414141; }
+.slick-row.selected.paused:hover { background: #505050; }
+.slick-row.selected.active { background-color: #203C25; }
+.slick-row.selected.active:hover { background: #25432A; }
+.slick-row.selected.willnotcomplete { background-color: #4D2929; }
+.slick-row.selected.willnotcomplete:hover { background: #553535; }
+.slick-row.selected.error { background-color: #4D2929; }
+.slick-row.selected.error:hover { background: #553535; }
+.slick-row.selected.pendingdelete { background-color: #101010; }
+.slick-row.selected.pendingdelete:hover { background: #252525; }
+.slick-row.selected.archived { background: #BBB; color: #000; }
+.slick-row.selected.archived:hover { background: #CCC; }
+
+/*
+.slick-row.customhover {
+    color: #FFF;
+    background: #667;
+}
+
+.slick-row.customhover.selected {
+    color: #FFF;
+    background: #55E;
+}
+*/
+
+.slick-header-columns {
+    background: #111;
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#222222));
+    background: -moz-linear-gradient(top,  #555,  #222);
+    border-bottom: 1px solid #666;
+}
+
+.slick-header-column {
+    background: #111;
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#222222));
+    background: -moz-linear-gradient(top,  #555,  #222);
+    border-right: 1px solid #666;
+}
+
+.slick-header-column:hover {
+    background: #666;
+    background: -webkit-gradient(linear, left top, left bottom, from(#444), to(#777));
+    background: -moz-linear-gradient(top,  #444,  #777);
+}
+
+.slick-header-column-active {
+    background: #333;
+    background: -webkit-gradient(linear, left top, left bottom, from(#222222), to(#555555));
+    background: -moz-linear-gradient(top,  #222,  #555);
+}
+
+.slick-header-column-sorted {
+    font-style: normal;
+    background: #222;
+    background: -webkit-gradient(linear, left top, left bottom, from(#111111), to(#333333));
+    background: -moz-linear-gradient(top,  #111,  #333);
+}
+
+.slick-header {
+    background: #333; /* override unsightly bright gray to right of column heading of last column */
+}
+#loginOuterWrapper {
+    /* the outer wrapper takes up the full screen (or size of the parent div) but could be different */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10; /* needed to appear in front of jQuery Layout UI panes */
+    /* background: #222; */
+}
+
+#loginInnerWrapper {
+    /* the inner wrapper takes up 100% of the outer wrapper's width, but constrains its placement
+        to be vertically aligned.  we use a margin-top of -1/2 of #loginBox.height */
+    position: relative; /* relative allows this to work outer wrapper less than the full window */
+    width: 100%;
+    top: 50%;           /* center top of div vertically */
+    margin-top: -80px; /* nudge up top of div to half height of #loginBox */
+}
+
+#tractorLoginTitle {
+    font-size: 2em;
+    color: #AAA;
+    margin: auto;
+    text-align: center;
+    padding-bottom: 5px;
+}
+
+#loginBox {
+    position: relative;
+    padding-top: 10px;
+    width: 200px;
+    height: 124px;
+    /* border-radius: 10px; */
+    color: #AAA;
+    background-color: #111;
+    text-align: center;
+    margin: auto;       /* center horizontally in inner wrapper */
+    -webkit-border-radius: 5px; 
+    -moz-border-radius: 5px; 
+    border-radius: 5px;
+    font-weight: bold;
+
+     -moz-box-shadow: 0px 0px 4px #ffffff;
+  -webkit-box-shadow: 0px 0px 4px #ffffff;
+          box-shadow: 0px 0px 4px #ffffff;
+}
+
+/* End of centering trick. */
+
+#loginBox:hover {
+     -moz-box-shadow: 0px 0px 8px #ffffff;
+  -webkit-box-shadow: 0px 0px 8px #ffffff;
+          box-shadow: 0px 0px 8px #ffffff;
+}
+
+#loginBox:active {
+     -moz-box-shadow: 0px 0px 12px #ffffff;
+  -webkit-box-shadow: 0px 0px 12px #ffffff;
+          box-shadow: 0px 0px 12px #ffffff;
+}
+
+#loginButton {
+    margin-top: 10px;
+}
+
+.disabledInput {
+    background-color: #555;
+}
+
+.disabledLabel {
+    color: #555;
+}
+
+#loginInputContainer {
+    position: relative;
+    height: 100%;
+}
+
+#logoutContainer {
+    position: relative;
+    margin-top: 30px;
+}
+
+.loginTopHalf {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 51%; /* extra % provides overlap that seems to help with visible horizontal seam with bottom half */
+    background: black;
+    background: -webkit-gradient(linear, left top, left bottom, from(#000), to(#444));
+    background: -moz-linear-gradient(top,  #000,  #444);
+}
+
+.loginBottomHalf {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: 50%;
+    background: black;
+    background: -webkit-gradient(linear, left bottom, left top, from(#000), to(#444));
+    background: -moz-linear-gradient(bottom,  #000,  #444);
+}
+
+#username, #password {
+    width: 100px;
+    -webkit-border-radius: 10px; 
+    -moz-border-radius: 10px; 
+    border-radius: 10px;
+}
+
+#loginError {
+    color: red;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+.promptOuterWrapper {
+    /* the outer wrapper takes up the full screen (or size of the parent div) but could be different */
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+.promptTransparentWrapper {
+    /* the outer wrapper takes up the full screen (or size of the parent div) but could be different */
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.5;
+    filter: alpha(opacity=0.5);
+}
+
+.promptInnerWrapper {
+    /* the inner wrapper takes up 100% of the outer wrapper's width,
+     * but constrains its placement to be vertically aligned.  we use
+     * a margin-top of -1/2 of .promptBox.height
+     */
+    position: relative; /* works with outer wrapper less than the full window */
+    width: 100%;
+    top: 50%;           /* center top of div vertically */
+    margin-top: -100px; /* nudge up top of div to half height of .promptBox */
+}
+
+.promptBox {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    text-align: right;
+    margin: auto;       /* center horizontally in inner wrapper */
+    background-color: #222;
+     -moz-box-shadow: 0px 0px 4px #ffffff; /* FF3.5+ */
+  -webkit-box-shadow: 0px 0px 4px #ffffff; /* Saf3.0+, Chrome */
+          box-shadow: 0px 0px 4px #ffffff; /* Opera 10.5, IE9, Chrome 10+ */
+}
+
+.promptQuestion {
+    position: absolute;
+    margin: 20px;
+    color: #CCC;
+}
+
+.promptInput {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    width: 155px; /* promptBox.width - 2 * promptInput.left (plus some 5px offset that may deal with borders */
+    resize: none;
+}
+
+.promptButtons {
+    position: absolute;
+    width: 100%;
+    right: 20px;
+    bottom: 20px;
+}
+
+.promptButtons button {
+    float: right;
+}
+
+#promptDialogOkButton {
+     -moz-box-shadow: 0px 0px 4px #ffffff; /* FF3.5+ */
+  -webkit-box-shadow: 0px 0px 4px #ffffff; /* Saf3.0+, Chrome */
+          box-shadow: 0px 0px 4px #ffffff; /* Opera 10.5, IE9, Chrome 10+ */
+}
+#jobTabHeader {
+    background: #303030; /* matches color of tab_{left|right}.png */
+    float: right; /* header to appear to right of window */
+    height: 30px;
+}
+
+#jobTabHeader>div {
+    float: left; /* items in header to line up left to right */
+    display: inline;
+}
+
+#jobTabHeader .popupButtonHeader {
+    float: left;
+    position: relative; /* position/top combo nudges button down a bit */
+    top: 3px;
+}
+
+#jobTabHeader .itemSetSearchInput {
+    margin-top: 5px;
+    margin-left: 20px;
+}
+
+#jobArchives {
+    margin-top: 2px;
+    margin-right: 15px;
+}
+
+#jobArchivesButton {
+    /* this is an html table formed into a radio-like button */
+    color: #888;
+    border-spacing: 0px;
+    font-size: 0.8em;
+}
+
+#currentJobsIndicator { visibility: hidden; }
+#currentJobsIndicator.selected { visibility: visible; }
+#archivedJobsIndicator { visibility: hidden; }
+#archivedJobsIndicator.selected { visibility: visible; }
+#jobArchivesButton .selected { color: #EEE; } /* show selected mode brighter */
+ 
+
+#jobTabBody {
+    height: 100%;
+    width: 100%;
+    background: #111;
+}
+
+#jobOuterCenter { 
+    /* this div holds another layout to hold job list in center and job details in south    */
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #222;
+}
+
+#jobSouthContainer { 
+    /* this div holds all of the views below #jobCenterContainer */
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #444;
+}
+
+#jobDetailContainer {
+    /* this div holds the layout for job detail panes */
+    width: 100%;
+    height: 100%;
+    background-color: #333;
+    overflow: hidden; /* avoids multiple scrollbars */
+}
+
+#jobList {
+    /* this div holds the grid listing all jobs */
+    width: 100%;
+    height: 100%;
+    background-color: #333;
+}
+
+.mouseOverAttr {
+    /* job attribute values change to this color on rollover */
+    color: #EEF;
+}
+
+.editingAttr {
+    /* job attribute values change to this color when being edited */
+    color: #DDF;
+}
+
+#taskSetView {
+    width: 100%;
+    height: 100%;
+    background-color: #800;
+}
+
+/*
+#jobGraphParent {
+    width: 100%;
+    height: 100%;
+}
+*/
+
+#taskSetViewHeader {
+    width: 100%;
+    top: 0px;
+    height: 24px;
+    background: #222;
+    background: -webkit-gradient(linear, left top, left bottom, from(#111111), to(#333333));
+    background: -moz-linear-gradient(top,  #111,  #333);
+}
+
+#taskSetViewTitle {
+    position: absolute;
+    left: 44px;
+    right: 22px;
+    top: 0px;
+    height: 24px;
+    padding-top: 3px;
+    text-align: center;
+    color: #AAA;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+}
+
+#taskSetViewHeader.alert {
+    color: yellow;
+    /* background: #E0D01B; */
+}
+
+#taskSetViewBody {
+    position: absolute;
+    width: 100%;
+    top: 48px;
+    bottom: 0px;
+    background-color: #222;
+}
+
+#taskSetSearchBar {
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    top: 24px;
+    height: 24px;
+    background: black; /* for non-webkit browsers */
+    background: -webkit-gradient(linear, left top, left bottom, from(#333333), to(#555555));
+    background: -moz-linear-gradient(top,  #333,  #555);
+}
+
+#taskSetGraphButton {
+    background-image: url(../images/taskset-switch-graph.png);
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 4px;
+    left: 26px;
+    /* prevent text selection */
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#taskSetListButton {
+    background-image: url(../images/taskset-switch-list.png);
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    /* prevent text selection */
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#taskSetSearchButton {
+    background-image: url(../images/magnifying-glass.png);
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    /* prevent text selection */
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.fullOpacity {
+    opacity: 1.0;
+    filter: alpha(opacity=1.0);
+}
+
+#jobGraph {
+    position: relative;
+    margin-left: -2px; /* tug the slider away from the right side of the pane */
+    width: 100%;
+    height: 100%;
+    background-color: #111; 
+    overflow: auto;
+}
+
+#taskList {
+    margin-left: -2px; /* tug the slider away from the right side of the pane */
+    margin-top: -2px; /* tug the slider away from the bottom side of the pane */
+}
+
+#taskRollover {
+    padding: 6px;
+    background-color: #c7dcff;
+    border: 1px solid #94946e;
+    position: absolute;
+    white-space: pre;
+    font-size: 0.8em;
+    border-radius: 5px;
+    z-index: 2; /* needs to be greater than z-index of the jquery layout plugin bar */
+}
+
+#taskLog { 
+    /* this div shows the details of the currently selected task */
+    position: absolute; /* need absolute position to overlay with jobInfo */
+    top: 0px; 
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    overflow: hidden;
+}
+
+#taskLogInner { 
+    width: 100%;
+    height: 100%;
+    background-color: #282828;
+}
+
+#taskLogInnermost { 
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    color: #BBB;
+    background-color: #282828;
+    white-space: pre; /* this effectively renders text as though it were pre */
+    /* allow text selection for log text */
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+#closeTaskLogButton {
+    background-image: url(../images/close.png);
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    z-index: 1;
+}
+/* progress bar made of 3 divs */
+/* --------------------------- */
+
+.progress-cell {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    float: left;
+}
+
+.progress-container {
+    display: inline-block;
+    position: relative;
+    left: 0px;
+    right: 30px;
+    height: 100%;
+    float: left;
+}
+
+.progress-percent {
+    font-size: 0.71em;
+    float: right;
+    margin-top: 2px;
+    margin-right: 5px;
+}
+
+.state-progress-bar {
+    display: inline-block;
+    height: 6px;
+    margin-top: 4px;
+    float: left;
+}
+
+.state-progress-bar.error {
+    background: #C22;
+}
+
+.state-progress-bar.active {
+    background: #0C0;
+}
+
+.state-progress-bar.done {
+    background: #888;
+}
+
+.elapsed-progress-bar {
+    position: absolute;
+    top: 2px;
+    width: 1px;
+    height: 10px;
+    background: #BBB;
+    float: left;
+}
+
+.terminal-progress-bar {
+    position: absolute;
+    top: 0px;
+    width: 1px;
+    height: 14px;
+    background: #888;
+    float: left;
+}
+
+.jobFlag {
+    width: 100%;
+    height: 100%;
+}
+
+.jobFlag.blue {
+    background: blue;
+}
+
+.jobFlag.yellow {
+    background: yellow;
+}
+
+.pinned_icon {
+    background-image: url(../images/pin_vertical.png);
+    width: 9px;
+    height: 16px;
+    float: left; /* necessary to get sort indicator to be visible */
+}
+
+.pinned_dot {
+    padding-left: 4px;
+}
+
+.locked_icon {
+    background-image: url(../images/lock.png);
+    width: 8px;
+    height: 10px;
+    float: left; /* necessary to get sort indicator to be visible in heading */
+}
+
+.slick-header-column .locked_icon {
+   /* center lock in table heading */
+   margin-left: 2px;
+   margin-top: 2px;
+}
+
+.slick-cell .locked_icon {
+   /* center lock in table cell */
+   margin-left: 5px;
+   margin-top: 2px;
+}
+
+.notes_icon {
+    /* for heading only */
+    background-image: url(../images/note_unread.png);
+    width: 11px;
+    height: 10px;
+    float: left; /* necessary to get sort indicator to be visible in heading */
+}
+
+.slick-header-column .notes_icon {
+   /* center icon in table heading */
+    margin-top: 3px;
+}
+
+.note_unread_icon {
+    background-image: url(../images/note_unread.png);
+    width: 11px;
+    height: 10px;
+    float: left;
+}
+
+.note_read_icon {
+    background-image: url(../images/note_read.png);
+    width: 11px;
+    height: 10px;
+    float: left;
+}
+
+.slick-cell .note_unread_icon, .slick-cell .note_read_icon {
+   /* center icon in table cell */
+   margin-top: 3px;
+   margin-left: 3px;
+}
+
+
+#jobList .slick-header-column[id^=slickgrid][id$=locked] .slick-sort-indicator {
+    /* hide the sort indicator in the header of the locked column since
+       there isn't enough room to show it completely */
+    display: none;
+}
+#jobInfo { 
+    /* this div displays the details of the selected job */
+    width: 100%;
+    height: 100%;
+    background-color: #222;
+    overflow: auto;
+}
+
+#jobInfo .itemInfoKey {
+    width: 100px;
+}
+
+#jobNotes {
+    position: absolute;
+    right: 20px;
+    top: 5px;
+    width: 400px;
+    height: 80px;
+    color: #AAA;
+}
+
+#jobNotesReadWrapper {
+    position: absolute;
+    top: 20px;
+    bottom: 0px;
+    width: 100%;
+}
+
+#jobNotesRead {
+    height: 100%; /* required for jScrollPane to know height of child div */
+    background: #222;
+    border: 2px solid #666;
+}
+
+#jobNoteData {
+    height: 100%; /* required for jScrollPane to know height */
+}
+
+#jobNoteTable td {
+    white-space: nowrap;   /* ensures long lines makes cell wider rather than taller */
+    white-space: pre;      /* comments with newline will take multiple lines */
+    vertical-align: top;   /* justifies shorter lines to top of cell when other cells in row are taller */
+}
+
+#jobNoteTable tr > td:first-child { 
+    /* first column is timestamp */
+    color: #888;
+    padding-right: 10px;
+    text-align: right; /* keep times aligned */
+} 
+
+#jobNoteTable tr > td:first-child + td { 
+    /* second column is note owner */
+    color: #CCC;
+    padding-right: 10px;
+} 
+
+#jobNoteTable tr > td:first-child + td + td { 
+    /* thrid column is note text */
+    color: #AAA;
+} 
+
+#jobNotesWrite {
+    position: absolute;
+    width: 100%;
+    bottom: -20px;
+    height: 16px;
+    color: #88F;
+    background: #333;
+}
+
+#jobNotesWrite.clicktoadd {
+    font-style: italic;
+}
+
+.note_expand_button {
+    background-image: url(../images/note_expand.png);
+    width: 18px;
+    height: 16px;
+    position: absolute;
+    top: 0px;
+    left: -20px; /* position to left of #jobNotesRead; corresponds to #jobNotesRead.left */
+}
+
+.note_add_button {
+    background-image: url(../images/note_add.png);
+    width: 18px;
+    height: 16px;
+    position: absolute;
+    top: 0px;
+    left: -20px; /* position to left of #jobNotesWrite; corresponds to #jobNotesRead.left */
+}
+#bladeNotes {
+    position: absolute;
+    right: 20px;
+    top: 5px;
+    width: 400px;
+    height: 80px;
+    color: #AAA;
+}
+
+#bladeNotesReadWrapper {
+    position: absolute;
+    top: 20px;
+    bottom: 0px;
+    width: 100%;
+}
+
+#bladeNotesRead {
+    height: 100%; /* required for jScrollPane to know height of child div */
+    background: #222;
+    border: 2px solid #666;
+}
+
+#bladeNoteData {
+    height: 100%; /* required for jScrollPane to know height */
+}
+
+#bladeNoteTable td {
+    white-space: nowrap;   /* ensures long lines makes cell wider rather than taller */
+    white-space: pre;      /* comments with newline will take multiple lines */
+    vertical-align: top;   /* justifies shorter lines to top of cell when other cells in row are taller */
+}
+
+#bladeNoteTable tr > td:first-child { 
+    /* first column is timestamp */
+    color: #888;
+    padding-right: 10px;
+    text-align: right; /* keep times aligned */
+} 
+
+#bladeNoteTable tr > td:first-child + td { 
+    /* second column is note owner */
+    color: #CCC;
+    padding-right: 10px;
+} 
+
+#bladeNoteTable tr > td:first-child + td + td { 
+    /* thrid column is note text */
+    color: #AAA;
+} 
+
+#bladeNotesWrite {
+    position: absolute;
+    width: 100%;
+    bottom: -20px;
+    height: 16px;
+    color: #88F;
+    background: #333;
+}
+
+#bladeNotesWrite.clicktoadd {
+    font-style: italic;
+}
+#taskList {
+    /* this div holds the grid listing for tasks of the selected job */
+    position: relative;
+    border: 1px solid black;
+    width: 100%;
+    height: 100%;
+    background-color: #222;
+}
+
+/* somehow the combination of taskList.font-size, taskList .slick-row.line-height, and
+   the rowHeight option to the slickgrid can be used to resize the row height and font.
+   Use the element inspector to make sure that cell sizes don't get too big so the rows
+   don't get large, wrap around, and make for ugly table rendering.
+ */
+
+#taskList {
+    font-size: 0.8em;
+}
+#taskCommandContainer { 
+    /* this div shows the details of the currently selected task */
+    width: 100%;
+    height: 100%;
+    background-color: #222;
+    overflow: auto;
+}
+
+#taskInfo { 
+    /* this div displays the details of the selected job */
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #333
+}
+
+#taskInfo .itemInfoKey {
+    width: 100px;
+}
+
+.taskInfoAttribute {
+    /* style for task attribute names in #taskInfo */
+    left: 0px;
+    width: 70px;
+    height: 15px;
+    padding-right: 5px;
+    float: left;
+    overflow: hidden;
+    text-align: right;
+    color: #777;
+}
+
+.taskInfoValue {
+    /* style for task attribute values in #taskInfo */
+    left: 70px;
+    right: 0px;
+    height: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #DDD;
+}
+
+#commandInfo { 
+    /* this div displays the currently selected command */
+    position: relative;
+    width: 100%; 
+    height: 100%;
+    color: #AAA;
+    background-color: #222;
+    padding-top: 6px;
+}
+
+#commandInfo .itemInfoKey {
+    width: 100px;
+}
+
+#commandInfo .bladesValue {
+    color: #AAF;
+}
+
+#commandInfo .bladesValue:hover {
+    color: #88F;
+}
+
+#commandInfo .bladesValue:active {
+    color: #44F;
+}
+
+#commandInfo .itemInfoKey.cidKey {
+    /* nudge the CommandID title down to be centered with command ids */
+    padding-top: 2px;
+}
+
+#commandInfo .itemInfoValue.cidValue div {
+    float: left;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#commandInfo .itemInfoValue.cidValue div.active {
+    color: #8F8;
+}
+
+#commandInfo .itemInfoValue.cidValue div.error {
+    color: #F44;
+}
+
+#commandInfo .itemInfoValue.cidValue div.done {
+    color: #CCC;
+}
+
+#commandInfo .itemInfoValue.cidValue div.blocked {
+    color: #888;
+}
+
+#commandInfo .itemInfoValue.cidValue div.current {
+    border: 2px solid #888;
+    -webkit-border-radius: 5px 5px 5px 5px; 
+    -moz-border-radius: 0px; 
+    border-radius: 5px;
+    background: #000;
+}
+
+#commandInfo .itemInfoValue.cidValue div.notCurrent {
+    border: 2px solid #222;
+    -webkit-border-radius: 5px 5px 5px 5px; 
+    -moz-border-radius: 0px; 
+    border-radius: 5px;
+}
+
+#commandInfo .itemInfoValue.cidValue div.notCurrent:hover {
+    border: 2px solid #666;
+}
+
+#commandInfo .itemInfoValue.cidValue div.notCurrent:active {
+    border: 2px solid #777;
+}
+
+#bladeTabHeader {
+    background: #303030; /* matches color of tab_{left|right}.png */
+    float: right;
+    height: 30px;
+}
+
+#bladeTabHeader>div {
+    float: left; /* items in header to line up left to right */
+    display: inline;
+}
+
+#bladeTabHeader .popupButtonHeader {
+    float: left;
+    position: relative; /* position/top combo nudges button down a bit */
+    top: 3px;
+    margin-right: 20px; /* give some space between button and next element to right */
+}
+
+#bladeTabHeader .itemSetSearchInput {
+    margin-top: 5px;
+    margin-left: 20px;
+}
+
+#bladeTabBody {
+    height: 100%;
+    width: 100%;
+    background: #111;
+}
+
+#bladeNorthContainer { 
+    /* this div holds blade list and graph layout at top of screen */
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #222;
+}
+
+#bladeSouthContainer { 
+    /* this div holds blade detail layout in bottom of screen */
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #222;
+}
+
+#bladeList {
+    /* this div holds the grid listing all blades */
+    width: 100%;
+    height: 100%;
+    background-color: #333;
+}
+
+#bladesGraphAndLegend {
+    /* this div holds the lengend and graph visualizing all blades */
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+}
+
+#bladesLegend {
+    position: absolute; 
+    width: 100%;
+    top: 0px;
+    bottom: 80px; /* same as bladesGraphContainer.top */
+    color: #AAA;
+    background-color: #111;
+}
+
+#bladesLegend .legendTitle {
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-bottom: 10px;
+}
+
+#bladesLegend table {
+    border-spacing: 4px 0px;
+    font-size: 0.8em;
+}
+
+#bladesLegend table td {
+    padding: 0px;
+}
+
+#bladesLegend table td .legendColor {
+    width: 10px;
+    height: 10px;
+}
+
+#bladesLegend table td .legendCount {
+    text-align: right;
+}
+
+#bladesGraphContainer {
+    position: absolute; 
+    width: 100%;
+    top: 80px; /* same as bladesLegend.bottom */
+    bottom: 0px;
+    background-color: green;
+}
+
+#bladesGraph {
+    /* this div holds the grraph visualizing all blades */
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+}
+
+#bladeInfo { 
+    /* this div displays the details of the selected blade */
+    width: 100%;
+    height: 100%;
+    color: #AAA;
+    background-color: #222;
+    overflow: auto;
+}
+
+#bladeTrace { 
+    /* this div displays the details of the selected blade */
+    width: 100%;
+    height: 100%;
+    float: left;
+    color: #AAA;
+    background-color: #111;
+    overflow: hidden; /* jScrollPane is handling scrolling */
+}
+
+#bladeTraceContent { 
+    width: 100%;
+    height: 100%;
+    white-space: pre;
+    /* allow text selection of trace text */
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+#bladeInfo .itemInfoKey {
+    width: 100px;
+}
+
+.bladeCommandsTable {
+    border-spacing: 5px 0px; /* puts spaced between key column and value column */
+}
+
+.bladeCommandsTable tr td {
+    padding: 0px; /* keep rows stacked as closely as possible */
+}
+
+.bladeCommandsTable .bladeCommand {
+    color: #AAF; /* different color to indicate value is a link */
+}
+
+.bladeCommandsTable .bladeCommand:hover {
+    color: #88F; /* different color to indicate value is a link and is hovered over */
+}
+
+.bladeCommandsTable .bladeCommand:active {
+    color: #44F; /* different color to indicate value is a link and is being clicked */
+}
+
+.bladeCommandsTable .lostCommand {
+    color: red;
+}
+
+#cloudButton {
+    position: relative;
+    left: -320px;
+    top: 4px;
+    background-image: url(../images/cloud.png);
+    width: 45px;
+    height: 25px;
+}
+#metersTabBody {
+    height: 100%;
+    width: 100%;
+    background: #111;
+}
+
+#metersArea {
+    height: 100%;
+    width: 100%;
+    padding-top: 10px;
+}
+
+#lastMetersUpdateTime {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    height: 20px;
+    width: 160px;
+    color: #CCC;
+    font-size: 0.8em;
+}
+
+.statsPlot {
+    width:  500px;
+    height: 125px;
+    margin-bottom: 10px;
+}
+
+.statsLegend {
+    height: 125px;
+    width:  180px;
+}
+
+#backlogLegend {
+    margin-top: -5px;
+}
+
+#sharingLimitCharts {
+    color: #BBB;
+    font-size: 0.8em;
+}
+
+.shareConfigChart {
+    width: 100px;
+    height: 20px;
+}
+
+.sharingLimitUsageChart {
+    width: 80px;
+    height: 80px;
+}
+
+.sharingLimitHeading {
+    color: #AAA;
+}
+ 
+.sharingLimitSeparator {
+    height: 1px;
+    background: #444;
+}
+ 
+#sharingLimitCharts table td {
+    text-align: right;
+    padding-right: 8px;
+}
+
+.limitNameTitle {
+    color: #DDD;
+    font-size: 1.4em;
+    text-align: left!important;
+}
+
+.limitTotalAndBasis {
+    font-size: 1.4em;
+    text-align: right!important;
+}
+
+.flot-y1-axis, .legendLabel {
+    color: #AAA
+}
+
+#adminTabBody {
+    background-color: #222;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    width: 100%;
+}
+
+#adminTabs {
+    /* override the font selection from jquery theming here */
+    font-family:"Lucida Sans Unicode","Lucida Grande",Helvetica,Arial,sans-serif;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    width: 100%;
+}
+
+#adminTabs .tabList li {
+    /* customize the jquerui tab headers */
+    background: black; /* for non-webkit browsers */
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#222222));
+    background: -moz-linear-gradient(top,  #555,  #222);
+}
+
+#adminTabs .tabList li a {
+    color: #888;
+}
+
+#adminTabs .tabList .ui-tabs-selected a {
+    color: #EEE;
+}
+
+#adminTabs .tabList .ui-state-hover a {
+    color: #BBB;
+}
+
+#adminTabs .tabList .ui-state-hover a:active {
+    color: #FFF;
+}
+
+#adminTabs .ui-tabs-panel {
+    /* customize the jquerui tab panels */
+    color: #AAA;
+    background: #222;
+    padding: 8px;
+
+    /* get the tab panel to take up all remaining vertical space in browser */
+    position: absolute;
+    top: 36px; /* start just after header; may need to set this is JS if formatting leads to taller .ui-widget-header */
+    bottom: 0px; /* end at bottom of parent */
+    left: 2px;  /* nudge */
+    right: 4px; /* nudging horizontally to allow for space for scrollbars */
+    background: #222; /* override jQueryUI customization */
+    border: none;     /* override jQueryUI customization */
+}
+
+#adminTabs.ui-widget-content {
+    /* override awful border and background set in jQueryUI customizations */
+    background: #222; 
+    border: none;
+}
+
+#adminTabs .ui-corner-all {
+    /* get rid of rounded corners around header */
+    border-radius: 0px;
+}
+
+#adminTabs .ui-widget-header {
+    /* override awful border and background set in jQueryUI customizations */
+    border-radius: 0px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid #888;
+    background: #222;
+}
+
+#adminTabs .tabList li {
+    border: 1px solid #666;
+}
+
+.scrollArea {
+    /* this div provides a 100% by 100% region that is easier to apply jScrollPane to */
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    outline: none; /* suppresses the unexpected blue outline that happens when the scroll area is selected */
+}
+
+.scrollContent {
+    width: 100%;
+    height: 100%;
+}
+
+.ui-tabs .ui-tabs-panel {
+    overflow: hidden; /* let jScrollPane manage overflow */
+    padding: 0px;
+}
+
+.ajaxLoading {
+    background: url("../images/ajax-loader.gif") no-repeat center center;
+    width: 24px;
+    height: 24px;
+}
+
+.limitTable {
+    border-spacing: 10px 0px; /* pack rows and columns close together */
+}
+
+#controlPanel table {
+    border-spacing: 8px 0px; /* pack rows and columns close together */
+}
+
+#controlPanel table td,th {
+    white-space: nowrap;  /* prevent cells from taking more than one line */
+}
+
+#limitCountersPanel table td,th {
+    white-space: nowrap;  /* prevent cells from taking more than one line */
+}
+
+#mailboxesPanel table td,th {
+    white-space: nowrap;  /* prevent cells from taking more than one line */
+}
+
+
+#reloadEngineConfigButton, #reloadLimitsButton, #reloadCrewsButton, #reloadBladeConfigButton, #reloadAllConfigButton {
+    background-image: url(../images/reload.png);
+}
+
+.simpleButton {
+    width: 20px;
+    height: 20px;
+}
+
+.pauseButton.isPaused {
+    background-image: url(../images/pause.png);
+}
+
+.pauseButton.isNotPaused {
+    background-image: url(../images/play.png);
+}
+
+.simpleButton.disabled {
+    opacity: 0.1;
+    filter: alpha(opacity=0.1);
+}
+
+.simpleButton.disabled:hover {
+    opacity: 0.1;
+    filter: alpha(opacity=0.1);
+}
+
+.simpleButton.disabled:active {
+    opacity: 0.1;
+    filter: alpha(opacity=0.1);
+}
+
+.space10px {
+    height: 10px;
+}
+
+.errorMessage {
+    color: red;
+}
+
+#allLimitsPair {
+    margin-bottom: 20px;
+}
+
+.aboutFrame {
+    position: relative;
+    margin-top: 40px;
+    margin-left: 20px;
+    padding: 10px;
+    float: left;
+    color: black;
+    background-color: #888;
+     -moz-box-shadow: 0px 0px 4px #ffffff; /* FF3.5+ */
+  -webkit-box-shadow: 0px 0px 4px #ffffff; /* Saf3.0+, Chrome */
+          box-shadow: 0px 0px 4px #ffffff; /* Opera 10.5, IE9, Chrome 10+ */
+    overflow: hidden;
+}
+
+.aboutFrame a {
+    color: #D7D7D7;
+}
+
+#aboutCopyright {
+    color: #444;
+    font-size: 9px;
+}
+
+.tierName {
+    text-align: right;
+}
+
+.filterMenu {
+    position: absolute;
+    right: 100px;
+    width: 260px;
+    padding: 6px;
+    -webkit-border-radius: 3px; 
+    -moz-border-radius: 3px; 
+    border-radius: 3px;
+    background-color: #111;
+    display: none;
+    z-index: 10;
+}
+
+.filterMenu .filterList {
+    width: 185px;
+    height: 200px;
+    font-size: 0.8em;
+    float: left;
+}
+
+.filterMenu .editButtons {
+    left: 185px; /* this should match .filterMenu.filterList.width */
+    height: 200px;
+    overflow: hidden;
+    background: #222;
+}
+
+.filterMenu .editButtons button {
+    width: 65px;  /* this should match .filterMenu.width - .filterMenu.filterList.width */
+    margin-left: 3px;
+}
+
+.filterMenu .editButtons .noneButton {
+    margin-bottom: 17px; /* provide some vertical space between no filter button and edit buttons */
+}
+
+.filterMenu .applyButtons {
+    position: absolute;
+    bottom: 5px;
+}
+
+.filterMenu .filterList .slick-row.rowtext {
+    color: red;
+}
+
+.filterMenu .slick-row.filter {
+    color: #CCC;
+    background-color: #333;
+}
+
+.filterBackButton {
+    background-image: url(../images/triangle_left_12.png);
+    width: 12px;
+    height: 13px;
+    margin-top: 8px;
+    margin-left: 4px;
+}
+
+.filterForwardButton {
+    background-image: url(../images/triangle_right_12.png);
+    width: 12px;
+    height: 13px;
+    margin-top: 8px;
+    margin-right: 4px;
+}
+.filterEditor {
+    position: relative;
+    height: 300px;
+    width: 560px;
+    padding: 6px;
+    -webkit-border-radius: 3px; 
+    -moz-border-radius: 3px; 
+    border-radius: 3px;
+    background-color: #111;
+    display: none;
+    z-index: 10;
+}
+
+/* TODO: try prepending .filterEditor before each rule */
+
+.filterEditor .nameHeader {
+    background: #333;
+    height: 30px;
+}
+
+.filterEditor .nameLabel {
+    color: #CCC;
+    float: left;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.filterEditor .nameInput {
+    width: 150px;
+}
+
+.filterEditor .modeHeader {
+    background: #333;
+    height: 30px;
+    border-bottom: 1px solid #444;
+}
+
+.filterEditor .modeMenuButton {
+    float: left;
+}
+
+.filterEditor .modeLabel {
+    color: #CCC;
+    margin-top: 5px;
+    float: left;
+}
+
+.filterEditor .body {
+    height: 210px;
+}
+
+.filterEditor .ruleList {
+    height: 100%;
+    background: #333;
+    overflow: auto;
+}
+
+.filterEditor .footer {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: #333;
+}
+
+.filterEditor .rule {
+    height: 30px;
+}
+
+.filterEditor .ruleToken {
+    float: left;
+}
+
+.filterEditor .dataInput {
+    width: 100px;
+}
+
+.filterEditor .dataInput.freestyle {
+    width: 370px;
+}
+
+.filterEditor .inputError {
+    color: red;
+    padding-top: 5px;
+    padding-left: 5px;
+    float: left;
+    display: none;
+}
+
+.filterEditor .plusButton {
+    background-image: url(../images/plusCircle.png);
+    width: 19px;
+    height: 19px;
+    margin-top: 3px;
+    margin-right: 3px;
+    float: right;
+}
+
+.filterEditor .minusButton {
+    background-image: url(../images/minusCircle.png);
+    width: 19px;
+    height: 19px;
+    margin-top: 3px;
+    margin-right: 3px;
+    float: right;
+}
+
+.filterEditor .saveButton {
+    float: right;
+}
+
+.filterEditor .cancelButton {
+    float: right;
+}
+
+.itemSetSearchInput {
+    width: 150px;
+    -webkit-border-radius: 4px; 
+    -moz-border-radius: 4px; 
+    border-radius: 4px;
+}
+#testMenuButton {
+    width: 100px;
+    height: 30px;
+}
+
+.menuButton {
+}
+
+.menuButtonHeader {
+    height: 20px;
+    margin-top: 3px;
+    background: black; /* for non-webkit browsers */
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#222222));
+    background: -moz-linear-gradient(top,  #555,  #222);
+    -webkit-border-radius: 3px; 
+    -moz-border-radius: 3px; 
+    border-radius: 3px;
+}
+
+.menuButtonBody {
+    background: #222;
+    position: absolute; /* needed to appear in foreground with z-index */
+    z-index: 100000; /* push menu body to foreground */
+                     /* needs to be > than the ui-resizable handle in jquery-ui (99999) */
+                     /* to avoid mouseleave event from triggering menu closing when the */
+                     /* menu overlaps a jquery-ui resize handle */
+    border: 1px solid #AAA
+}
+
+.menuButtonButton {
+    float: left;
+    height: 100%;
+    border: none;
+    background: transparent;
+}
+
+.menuButtonTitle {
+    float: left;
+}
+
+.menuButtonTriangle {
+    background-image: url(../images/drop_triangle.png);
+    width: 16px;
+    height: 14px;
+    float: left;
+}
+
+.menuItem {
+    padding: 2px;
+    margin: 2px;
+    color: #CCC;
+    background: #222;
+}
+
+.menuItem:hover {
+    color: #EEE;
+}
+
+.menuItem:active {
+    color: #FFF;
+}
+.popupButton {
+}
+
+.popupButtonHeader {
+    height: 20px;
+    margin-top: 3px;
+    background: black; /* for non-webkit browsers */
+    background: -webkit-gradient(linear, left top, left bottom, from(#555555), to(#222222));
+    background: -moz-linear-gradient(top,  #555,  #222);
+    -webkit-border-radius: 3px; 
+    -moz-border-radius: 3px; 
+    border-radius: 3px;
+}
+
+.popupButtonBody {
+    background: #222;
+    position: fixed; /* needed to appear in foreground with z-index */
+    z-index: 100000; /* push body to foreground */
+                     /* needs to be > than the ui-resizable handle in jquery-ui (99999) */
+                     /* to avoid mouseleave event from triggering body closing when the */
+                     /* body overlaps a jquery-ui resize handle */
+}
+
+.popupButtonButton {
+    float: left;
+    height: 100%;
+    border: none;
+    background: transparent;
+}
+
+.popupButtonTitle {
+    float: left;
+}
+
+.popupButtonTriangle {
+    background-image: url(../images/drop_triangle.png);
+    width: 16px;
+    height: 14px;
+    float: left;
+}
+.itemInfoTable {
+    border-spacing: 5px 0px; /* puts spaced between key column and value column */
+}
+
+table {
+    table-layout: fixed;
+}
+
+.itemInfoTable td {
+    overflow: hidden;
+    vertical-align: top;
+    padding: 0px; /* keep rows stacked as closely as possible */
+}
+
+.itemInfoTable .itemInfoKey {
+    text-align: right;
+    color: #888;
+    padding: 0px; /* keep rows stacked as closely as possible */
+}
+
+.itemInfoTable tr.hidden {
+    /* hidden rows are tagged as hidden */
+    display: None;
+}
+.itemInfoTable .itemInfoValue {
+    color: #DDD;
+    padding: 0px; /* keep rows stacked as closely as possible */
+    white-space: nowrap;
+    /* allow text selection for values */
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+.itemInfoTable .itemInfoValue .rightbox {
+    /* style for a fixed-width box with right justification */
+    white-space: pre;
+    float: left;
+    width: 100px;  /* provide fixed width div in which to right-justify */
+    text-align: right;
+}
+
+.itemInfoTable .itemInfoEditableKey {
+    color: #88F;
+}
+
+.itemInfoTable .itemInfoEditableValue {
+    color: #99F;
+    width: 100%;
+}
+
+.itemInfoTable .editingAttr {
+    /* attribute values change to this color when being edited */
+    color: #DDF;
+}
+
+.itemInfoTable .itemInfoKeyCol {
+    color: green;
+}
+
+.itemInfoTable table {
+    /* this modifies the properties tables that are values inside the
+       cells of an ItemInfoTable, not the ItemInfoTable itself */
+    border-spacing: 4px 0px;
+}
+.prefsOuterWrapper {
+    /* the outer wrapper takes up the full screen (or size of the parent div) but could be different */
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    display: none;
+    z-index: 10;
+}
+
+.prefsTransparentWrapper {
+    /* the outer wrapper takes up the full screen (or size of the parent div) but could be different */
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.5;
+    filter: alpha(opacity=0.5);
+}
+
+.prefsInnerWrapper {
+    /* the inner wrapper takes up 100% of the outer wrapper's width, but constrains its placement
+        to be vertically aligned.  we use a margin-top of -1/2 of .promptBox.height */
+    position: relative; /* relative allows this to work outer wrapper less than the full window */
+    width: 100%;
+    top: 50%;           /* center top of div vertically */
+    margin-top: -250px; /* nudge up top of div to half height of .prefsBox */
+}
+
+.prefsBox {
+    position: relative;
+    width: 345px;
+    height: 400px;
+    border-radius: 10px;
+    text-align: left;
+    margin: auto;       /* center horizontally in inner wrapper */
+    color: #CCC;
+    background-color: #222;
+     -moz-box-shadow: 0px 0px 4px #ffffff; /* FF3.5+ */
+  -webkit-box-shadow: 0px 0px 4px #ffffff; /* Saf3.0+, Chrome */
+          box-shadow: 0px 0px 4px #ffffff; /* Opera 10.5, IE9, Chrome 10+ */
+}
+
+.prefsTitle {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.prefsTable {
+    position: absolute;
+    left: 20px;
+    top: 65px;
+    border-spacing: 10px 0px; /* puts space between key column and value column */
+}
+
+.prefValueMenu {
+    float: right;
+}
+
+.prefValue {
+    text-align: right;
+}
+
+.prefValueHdr {
+    text-align: right;
+    font-style: italic;
+}
+
+.prefsButtons {
+    position: absolute;
+    width: 100%;
+    right: 20px;
+    bottom: 20px;
+}
+
+.prefsButtons button {
+    float: right;
+}
+
+.wideJobListLayoutIcon {
+    background-image: url(../images/wide-layout.png);
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+}
+
+.tallJobGraphLayoutIcon {
+    background-image: url(../images/tall-layout.png);
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+}
+#dbTabHeader>div {
+    float: left; /* items in header to line up left to right */
+    display: inline;
+}
+
+#dbTableMenuButton {
+    color: #FFF;
+    float: left;
+    /* margin-top: 2px; */
+    margin: 4px;
+    padding: 4px;
+    -webkit-border-radius: 4px 4px 0px 0px; 
+    -moz-border-radius: 0px; 
+    border-radius: 4px 4px 0px 0px;
+    border: solid #333 2px;
+    border-bottom: 0px;
+    background-color: #333;
+    z-index: 2; /* try to overlap menu */
+    width: 150px;
+}
+
+#dbTableMenuButton.opened {
+    background-color: #222;
+    border: solid #444 2px;
+    border-bottom: solid #222 2px;
+}
+
+#dbTableMenuButton:hover {
+    background-color: #555;
+}
+
+#dbTableMenuButton:active {
+    background-color: #666;
+}
+
+#dbTableText {
+    float: left;
+    text-align: left;
+}
+
+#dbTableButton>.lightTriangle {
+    float: left;
+}
+
+#dbItemCounter {
+    color: #CCC;
+    float: left;
+    margin-top: 10px;
+    padding-right: 10px;
+}
+
+#dbRefreshButton {
+    width: 20px;
+    height: 20px;
+    background-image: url(../images/refresh-gray.png);
+    float: left;
+    margin-top: 5px;
+}
+
+.dbWhereInput {
+    width: 400px;
+    -webkit-border-radius: 4px; 
+    -moz-border-radius: 4px; 
+    border-radius: 4px;
+    float: left;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+#dbShowBookmarksButton {
+    background-image: url(../images/bookmark.png);
+    width: 13px;
+    height: 25px;
+    margin-top: 2px;
+    margin-left: 10px;
+    float: left;
+}
+
+#dbTableMenu {
+    position: absolute;
+    top: -5px;
+    width: 420px;
+    background-color: #222;
+    border: solid #444 2px;
+    z-index: 1; /* have it display before the item list */
+}
+
+#dbTableButtonsWrapper {
+    width: 100%;
+    text-align: center;
+}
+
+#dbTableButtons {
+    /* container for all table selection "radio" style button */
+    margin: 5px;
+}
+
+.dbTableSpacer {
+    width: 100%;
+    /* border-bottom: 1px solid #444; */
+    float: left;
+    clear: left;
+    height: 10px;
+}
+
+.dbTableButton {
+    float: left;
+    color: #CCC;
+    font-size: 1.18em;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin: 1px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px; 
+    border-radius: 4px;
+}
+
+.dbTableButton:hover {
+    color: #FFF;
+}
+
+.dbTableButton.selected {
+    background-color: #BEBEBE;
+    color: black;
+    border: 1px solid white;
+}
+
+#dbAttributesTitleContainer {
+    clear: left;
+}
+
+.dbMenuTitle {
+    position: relative;
+    display: block;
+    width: 150px;
+    color: white;
+    margin-left: 5px;
+    padding-top: 20px;
+    font-size: 1.3em;
+}
+
+.dbTableSection {
+    float: left;
+    clear: left;
+    width: 100%;
+}
+
+.dbTableSectionButton {
+    float: left;
+    clear: left;
+    color: #CCC;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin: 1px;
+    font-weight: 1.18em;
+}
+
+.dbTableSectionDisclosure {
+    background-image: url(../images/triangle_right_8.png);
+    width: 8px;
+    height: 8px;
+    float: left;
+    margin-top: 4px;
+    opacity: 0.5; /* dim it */
+    filter: alpha(opacity=0.5);
+}
+
+.dbTableSectionDisclosure.opened {
+    transform:rotate(90deg);
+    -ms-transform:rotate(90deg); /* IE 9 */
+    -webkit-transform:rotate(90deg); /* Opera, Chrome, and Safari */
+}
+
+.dbTableSectionDisclosure.blocked {
+    opacity: 0.05; /* dim it */
+    filter: alpha(opacity=0.05);
+   }
+
+.dbTableSectionName {
+    float: left;
+    margin-left: 4px;
+}
+
+.dbTableSectionButton.blocked {
+    color: black;
+}
+
+.dbTableSectionButton:hover {
+    color: #FFF;
+}
+
+.dbTableSectionButton.blocked:hover {
+    color: black;
+}
+
+.dbTableFields {
+    float: left;
+    clear: left;
+    color: #CCC;
+}
+
+.dbFieldButton {
+    float: left;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin: 1px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px; 
+    border-radius: 4px;
+}
+
+.dbFieldButton:hover {
+    color: #DDD;
+    background-color: #333;
+}
+
+.dbFieldButton:active {
+    color: #FFF;
+    background-color: #444;
+}
+
+
+.dbFieldButton.selected {
+    background-color: #555;
+}
+
+/*
+.dbFieldButton.primary.selected {
+    background-color: #777;
+}
+*/
+
+#dbFieldRollover {
+    padding: 6px;
+    background-color: #c7dcff;
+    border: 1px solid #94946e;
+    position: absolute;
+    white-space: pre;
+    font-size: 0.8em;
+    border-radius: 5px;
+    z-index: 1; /* needs to be greater than z-index of the jquery layout plugin bar */
+
+}
+
+#dbTabBody {
+    height: 100%;
+    width: 100%;
+}
+
+#dbItemList {
+    /* this div holds the grid listing all items returned from database */
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+}
+
+#dbBookmarkMenu {
+    position: absolute;
+    width: 400px;
+    height: 246px;
+    top: -5px;
+    background: #222;
+    border: 2px solid #444;
+    z-index: 1; /* need to appear above the slickgrid */
+}
+
+#dbBookmarkHeader {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    bottom: 155px;
+}
+
+#dbBookmarkBody {
+    position: absolute; /* NOTE: absolute is IMPORTANT for scrolling to work (scroll area could wander otherwise) */
+    width: 100%;
+    top: 45px;
+    bottom: 0px;
+}
+
+#dbBookmarkTitle {
+    float: left; /* so add/remove bookmark buttons appear to right */
+}
+
+.dbBookmarkItem {
+    float: left;
+    width: 100%;
+    clear: left;
+    color: #CCC;
+    padding-left: 10px;
+    margin-bottom: 2px;
+}
+
+.dbBookmarkItem.selected {
+    background-color: #333;
+}
+
+.dbBookmarkItem:hover {
+    color: #FFF; 
+    background-color: #444;
+}
+
+.dbBookmarkItem.removemode:hover {
+    background-color: #844;
+}
+
+#dbAddBookmarkButton {
+    background-image: url(../images/bookmark_add.png);
+    width: 12px;
+    height: 24px;
+}
+
+#dbRemoveBookmarkButton {
+    background-image: url(../images/bookmark_subtract.png);
+    width: 12px;
+    height: 24px;
+}
+
+#dbAddBookmarkButton,#dbRemoveBookmarkButton {
+    margin-top: 15px;
+    margin-right: 10px;
+    float: right;
+    opacity: 1.0;
+    filter: alpha(opacity=1.0);
+}
+
+#dbAddBookmarkButton:hover,#dbRemoveBookmarkButton:hover {
+    color: #F00; 
+    background-color: #444;
+}
+
+#dbRemoveBookmarkButton.activated {
+    background-image: url(../images/bookmark_subtract_red.png);
+}
+
+.dbBookmarkTableSection {
+    float: left;
+    width: 100%;
+    clear: left;
+    color: #CCC;
+    font-size: 1.1em;
+    border-top: 1px solid #444;
+    margin-bottom: 5px;
+}
+
+#dbSearchAlertContainer {
+    position: absolute;
+    top: 50px;
+    width: 100%;
+    height: 100px;
+    display: block;
+}
+
+#dbSearchAlert {
+    position: relative;
+    display: block;
+    width: 300px;
+    height: 100%;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#dbArchivesWrapper {
+    clear: left;
+    padding-top: 10px;
+    
+}
+
+#dbArchivesCheckbox {
+    float: left;
+}
+
+#dbArchivesLabel {
+    padding-top: 1px;
+    color: #AAA;
+    font-style: italic;
+}
+.slider-frame {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  width: 36px;
+  height: 20px;
+  background: #2CA243;
+  /* background #C52020; */
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0px 0px 4px 0 rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: inset 0px 0px 4px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0px 0px 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.slider-light {
+  display: block;
+  float: left;
+  width: 20px;
+  background: #C52020;
+  /* background: #2CA243; */
+      -moz-border-radius: 4px;
+  border-radius: 4px;
+
+}
+
+.slider-button {
+  display: block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  background: #CCCCCC;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-transition: all 0.25s ease-in-out;
+  -moz-transition: all 0.25s ease-in-out;
+  transition: all 0.25s ease-in-out;
+  color: #000;
+  font-family:sans-serif;
+  font-size:11px;
+  font-weight:bold;
+  text-align: center;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0px 0px 4px 0 rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: inset 0px 0px 4px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0px 0px 4px 0 rgba(0, 0, 0, 0.25);
+  margin-left: 16px;}
+
+.slider-button.on {
+  margin-left: 0px;
+}
+
+.disabled {
+    opacity: 0.1;
+    filter: alpha(opacity=0.1);
+}
+
+#reportsTabBody {
+    width: 100%;
+    height: 100%;
+    background: #222;
+}
+
+#reportsGrid {
+    width: 100%;
+    height: 100%;
+}
+
+#reportsGridInner {
+    height: 100%;
+}
+
+#reportsGrid table {
+    width: 100%;
+}
+
+#reportsGrid table td {
+    height: 200px;
+    font-size: 2em;
+    text-align: center;
+}
+
+#reportsGrid .jspVerticalBar {
+    right: 4px;
+}
+
+.reportCell {
+    width: 100%;
+    height: 100%;
+    color: #BBB;
+    background: #333;
+}
+
+.reportCell:hover {
+    background: #222;
+}
+
+.reportCell:active {
+    color: #FFF;
+}
+
