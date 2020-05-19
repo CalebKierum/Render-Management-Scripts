@@ -262,11 +262,17 @@ for render in renderList:
             maxDict[shot] = {"ts":timestamp, "path":outputPath}
 
 
+import safetyAsserts
+
 putShotsInCapstoneFolder = getNextArgOrAsk("Put these renders in the capstone folder? {y/n}")
 if (putShotsInCapstoneFolder == "y"):
     for shot in maxDict:
         pathToPutIn = directory + shot + "/" + shot + "_ren.mp4"
         pathItIsAt = maxDict[shot]["path"]
+
+        # SAFETY ASSERTS
+        safetyAsserts.safetyAsserts(pathToPutIn)
+
         copyfile(pathItIsAt, pathToPutIn)
 
 
