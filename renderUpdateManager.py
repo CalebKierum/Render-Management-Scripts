@@ -5,6 +5,7 @@ import difflib
 import glob
 import cv2
 import numpy as np
+from shutil import copyfile
 ### Stuff for repeating args
 
 reportArgs = ""
@@ -68,7 +69,7 @@ def demandGoingFurther(atPath, firstTime):
 def timestampOfFolderORFileInFolder(fullPath):
     fileList = glob.glob(fullPath + "/" + "*.tif")
     if (len(fileList) == 0):
-        print("This folder " + fullPath + " we expected to have frames... but did not")
+        #print("This folder " + fullPath + " we expected to have frames... but did not")
         return None
     else:
         return os.path.getmtime(fileList[0])
@@ -100,7 +101,7 @@ def load_obj(name ):
         return pickle.load(f)
 
 
-def findLatestRenderFolders(shotFolder, oldTS):
+def findLatestRenderFolders(shotFolder, oldTS, shotName):
     rendersFolder = shotFolder + "/renders"
     if os.path.exists(rendersFolder):
         timestamps = getFolderToTimestampDictionaryGoingFurther(rendersFolder + "/")
@@ -111,7 +112,7 @@ def findLatestRenderFolders(shotFolder, oldTS):
         build = []
         for folder in timestamps:
             if (timestamps[folder] > oldTS):
-                build.append({"Folder": folder, "Path": demandGoingFurther(rendersFolder + "/" + folder, True), "timestamp":timestamps[folder]})
+                build.append({"Folder": folder, "Path": demandGoingFurther(rendersFolder + "/" + folder, True), "timestamp":timestamps[folder], "shot": shotName})
 
         if (len(build) == 0):
             return None
@@ -126,51 +127,69 @@ def getLastestRenderFolderDictionary(fullPath, oldTS):
     for o in sorted(os.listdir(fullPath)):
         if os.path.isdir(os.path.join(fullPath, o)):
             fullPath_ext = fullPath + o
-            renderPaths = findLatestRenderFolders(fullPath_ext, oldTS)
-            if renderPaths is not None:
+            renderPaths = findLatestRenderFolders(fullPath_ext, oldTS, o)
+            if renderPaths is not None and len(renderPaths) != 0:
                 #renderAge = os.path.getmtime(renderPath)
                 #build[o] = {"renderFolder": renderPath, "age":renderAge}
                 build[o] = renderPaths
-            else:
-                build[o] = {"NONE":"NONE"}
 
     return build
 
 
 
 #print(getLastestRenderFolderDictionary(directory))
-#oldTS = load_obj( "tListDict3")
-oldTS = 0
+#oldTS = load_obj( "timeStamp")
+oldTS = load_obj( "timeStamp")
 newDict = getLastestRenderFolderDictionary(directory, oldTS)
-print(newDict)
-newList = []
+print("Found: " + str(newDict))
+potentialRenderString = ""
 for key in newDict:
-    if not "NONE" in newDict[key]:
-        if not key in oldDict:
-            newList.append(key)
-        elif "NONE" in oldDict[key]:
-            newList.append(key)
-        elif oldDict[key]["age"] < newDict[key]["age"]:
-            newList.append(key)
+    for el in newDict[key]:
+        potentialRenderString += key + "/" + el["Folder"] + ","
 
 print()
-print("New renders appear to be: " + str(newList))
+print("New renders appear to be: " + potentialRenderString)
 print()
-if (len(newList) == 0):
-    print("There appear to be no shots and we dont support all yet so.....")
-    sys.exit(1)
 
 request = getNextArgOrAsk("List shots from above you want to render OR allnew OR all: ")
 renderList = []
 if request.lower() == "all":
-    print("NOT SUPPORTED")
+    print("Preparing this may take some time.....")
+    considerationDict = getLastestRenderFolderDictionary(directory, 0)
+    for key in considerationDict:
+        for el in considerationDict[key]:
+            renderList.append(el)
+
 elif request.lower() == "allnew":
-    renderList = newList
+    for key in newDict:
+        for el in newDict[key]:
+            renderList.append(el)
 else:
     # PARSE the listp
-    parts = request.lower().split(",")
+    parts = request.split(",")
     for part in parts:
-        renderList.append(difflib.get_close_matches(part, newList, n=1)[0])
+        reqParts = part.split("/")
+        if (len(reqParts) > 2):
+            print("Cant handle " + part)
+        elif (len(reqParts) == 2):
+            # there is a subpath
+            fullPath_ext = directory + reqParts[0] + "/renders/" + reqParts[1]
+            print("Fullpath ext " + fullPath_ext)
+            found = {"Folder": reqParts[1], "Path": demandGoingFurther(fullPath_ext, True), "timestamp":timestampOfFolderORFileInFolder(demandGoingFurther(fullPath_ext, True)), "shot":reqParts[0]}
+            renderList.append(found)
+        else:
+            # this better be a shots folder
+            if (part in newDict):
+                for el in newDict[part]:
+                    renderList.append(el)
+            else:
+                # This is an old shots folder
+                fullPath_ext = fullPath + part
+                renderPaths = findLatestRenderFolders(fullPath_ext, 0, part)
+                if (renderPaths is None or len(renderPaths) == 0):
+                    print("Cant handle " + part + " no render folders found her?")
+                for path in renderPaths:
+                    renderList.append(path)
 
 
 print()
@@ -183,13 +202,14 @@ if ("" == outputFolder or "def" == outputFolder):
 
 
 
-def compositeFramesInFolder(pathWithShots, outputToFolder):
+import frameSequenceTools
+def compositeFramesInFolder(pathWithShots, outputToFolder, shortName):
 
     print("Writing images in " + pathWithShots + " to " + outputToFolder)
     if not pathWithShots.endswith('/'):
         pathWithShots += "/"
 
-    fileList = sorted(glob.glob(pathWithShots + "*.tif"))
+    fileList = frameSequenceTools.orderedFrames(glob.glob(pathWithShots + "*.tif"), shortName)
 
     if (len(fileList) == 0):
         print("FOR SOME REASON FOUND 0 images at " + pathWithShots)
@@ -214,13 +234,38 @@ def compositeFramesInFolder(pathWithShots, outputToFolder):
     return ""
 
 
+maxDict = {}
 for render in renderList:
-    compositeFramesInFolder(newDict[render]["renderFolder"], outputFolder+render+".mp4")
+    folder = render["Folder"]
+    path = render["Path"]
+    timestamp = render["timestamp"]
+    shot = render["shot"]
+    outputPath = outputFolder+shot+"_" +folder + ".mp4"
+    compositeFramesInFolder(path, outputPath, shot + "/" + folder)
+    if (not shot in maxDict):
+        maxDict[shot] = {"ts":timestamp, "path":outputPath}
+    else:
+        prev = maxDict[shot]["ts"]
+        if (timestamp > prev):
+            maxDict[shot] = {"ts":timestamp, "path":outputPath}
+
+
+putShotsInCapstoneFolder = getNextArgOrAsk("Put these renders in the capstone folder? {y/n}")
+if (putShotsInCapstoneFolder == "y"):
+    for shot in maxDict:
+        pathToPutIn = directory + shot + "/" + shot + "_ren.mp4"
+        pathItIsAt = maxDict[shot]["path"]
+        copyfile(pathItIsAt, pathToPutIn)
 
 
 saveAsk = getNextArgOrAsk("Do you want to save that you did this render? {y/n}")
 if (saveAsk == "y"):
     print("Saving!!!")
-    save_obj(newDict, "tListDict2")
+    maxTS = 0
+    for key in maxDict:
+        ts = maxDict[key]["ts"]
+        if (ts > maxTS):
+            maxTS = ts
+    save_obj(maxTS, "timeStamp")
 
 print("Ok we are done.")
