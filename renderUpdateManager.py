@@ -143,34 +143,34 @@ oldTS = load_obj( "timeStamp")
 newDict = getLastestRenderFolderDictionary(directory, oldTS)
 print("Found: " + str(newDict))
 potentialRenderString = ""
+
+print()
+print("New renders appear to be:")
 for key in newDict:
     for el in newDict[key]:
-        potentialRenderString += key + "/" + el["Folder"] + ","
+        print("\t" + key + "/" + el["Folder"])
+
 
 print()
-print("New renders appear to be: " + potentialRenderString)
-print()
 
-request = getNextArgOrAsk("List shots from above you want to render OR allnew OR all: ")
+request = getNextArgOrAsk("List shots from above you want to render, allnew, and/or all: ")
 renderList = []
-if request.lower() == "all":
-    print("Preparing this may take some time.....")
-    considerationDict = getLastestRenderFolderDictionary(directory, 0)
-    for key in considerationDict:
-        for el in considerationDict[key]:
-            renderList.append(el)
 
-elif request.lower() == "allnew":
-    for key in newDict:
-        for el in newDict[key]:
-            renderList.append(el)
-else:
-    # PARSE the listp
-    parts = request.split(",")
-    for part in parts:
-        reqParts = part.split("/")
+for request in request.split(","):
+    if (request.lower() == "all"):
+        print("Preparing this may take some time.....")
+        considerationDict = getLastestRenderFolderDictionary(directory, 0)
+        for key in considerationDict:
+            for el in considerationDict[key]:
+                renderList.append(el)
+    elif request.lower() == "allnew":
+        for key in newDict:
+            for el in newDict[key]:
+                renderList.append(el)
+    else:
+        reqParts = request.split("/")
         if (len(reqParts) > 2):
-            print("Cant handle " + part)
+            print("Cant handle " + request)
         elif (len(reqParts) == 2):
             # there is a subpath
             fullPath_ext = directory + reqParts[0] + "/renders/" + reqParts[1]
@@ -179,17 +179,29 @@ else:
             renderList.append(found)
         else:
             # this better be a shots folder
-            if (part in newDict):
-                for el in newDict[part]:
+            if (request in newDict):
+                for el in newDict[request]:
                     renderList.append(el)
             else:
+                # Fuzzy search keys
+                fuzzed = False
+                for key in newDict:
+                    if request in key:
+                        for el in newDict[key]:
+                            fuzzed = True
+                            renderList.append(el)
+
+                if (fuzzed):
+                    continue
+
                 # This is an old shots folder
-                fullPath_ext = fullPath + part
-                renderPaths = findLatestRenderFolders(fullPath_ext, 0, part)
+                fullPath_ext = directory + request
+                renderPaths = findLatestRenderFolders(fullPath_ext, 0, request)
                 if (renderPaths is None or len(renderPaths) == 0):
-                    print("Cant handle " + part + " no render folders found her?")
+                    print("Cant handle " + request + " no render folders found her?")
                 for path in renderPaths:
                     renderList.append(path)
+
 
 
 print()
