@@ -245,6 +245,7 @@ def compositeFramesInFolder(pathWithShots, outputToFolder, shortName):
     out = None
     return ""
 
+import safetyAsserts
 
 maxDict = {}
 for render in renderList:
@@ -253,6 +254,9 @@ for render in renderList:
     timestamp = render["timestamp"]
     shot = render["shot"]
     outputPath = outputFolder+shot+"_" +folder + ".mp4"
+
+    safetyAsserts.safetyAsserts(outputPath)
+
     compositeFramesInFolder(path, outputPath, shot + "/" + folder)
     if (not shot in maxDict):
         maxDict[shot] = {"ts":timestamp, "path":outputPath}
@@ -262,7 +266,7 @@ for render in renderList:
             maxDict[shot] = {"ts":timestamp, "path":outputPath}
 
 
-import safetyAsserts
+
 
 putShotsInCapstoneFolder = getNextArgOrAsk("Put these renders in the capstone folder? {y/n}")
 if (putShotsInCapstoneFolder == "y"):

@@ -22,3 +22,6 @@ def safetyAsserts(pathToWriteTo):
 
     # No double dots in it
     assert(pathToWriteTo.find("..") == -1)
+
+    assert(pathToWriteTo[-1] != "/")
+    assert(pathToWriteTo[-1] != ".")
