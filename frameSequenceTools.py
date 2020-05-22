@@ -49,18 +49,22 @@ def orderedFrames(frames, printNM):
 
     if (suspiciouslyFewFrames):
         suspicion = True
-        print(printNM + " had suspiciously few frames " + str(minimum) + "-" + str(maximum))
+        if (printNM != ""):
+            print(printNM + " had suspiciously few frames " + str(minimum) + "-" + str(maximum))
 
     if (len(suspiciouslyMissing) != 0):
         suspicion = True
-        print(printNM + " suspiciously missing frames: " + str(suspiciouslyMissing))
+        if (printNM != ""):
+            print(printNM + " suspiciously missing frames: " + str(suspiciouslyMissing))
 
     if (len(suspiciouslySmall) != 0):
         suspicion = True
-        print(printNM + " has some frames with suspiciously small sizes may be corrupted " + str(sorted(suspiciouslySmall)))
+        if (printNM != ""):
+            print(printNM + " has some frames with suspiciously small sizes may be corrupted " + str(sorted(suspiciouslySmall)))
 
     if (suspicion):
-        print()
+        if (printNM != ""):
+            print()
 
     return {"Frames": build, "Suspicion":suspicion}
 

@@ -6,6 +6,7 @@ import glob
 import cv2
 import numpy as np
 from shutil import copyfile
+import caffeine
 ### Stuff for repeating args
 
 reportArgs = ""
@@ -153,7 +154,7 @@ for key in newDict:
 
 print()
 
-request = getNextArgOrAsk("List shots from above you want to render, allnew, and/or all: ")
+request = getNextArgOrAsk("List shots from above you want to render, allnew, or allmostrecent, and/or all: ")
 renderList = []
 
 for request in request.split(","):
@@ -167,6 +168,15 @@ for request in request.split(","):
         for key in newDict:
             for el in newDict[key]:
                 renderList.append(el)
+    elif request.lower() == "allmostrecent":
+        print("Preparing this may take some time.....")
+        considerationDict = getLastestRenderFolderDictionary(directory, 0)
+        for key in considerationDict:
+            maxEL = None
+            for el in considerationDict[key]:
+                if (maxEL is None or el["timestamp"] > maxEL["timestamp"]):
+                    maxEL = el
+            renderList.append(maxEL)
     else:
         reqParts = request.split("/")
         if (len(reqParts) > 2):
