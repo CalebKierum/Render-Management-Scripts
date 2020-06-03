@@ -108,6 +108,20 @@ def load_obj(name ):
     with open(name, 'rb') as f:
         return pickle.load(f)
 
+def dicsEqualCompringKeys(dict1, dict2, keys):
+    for key in keys:
+        if (not key in dict1):
+            return False
+        if (not key in dict2):
+            return False
+
+        v1 = dict1[key]
+        v2 = dict2[key]
+        if (v1 != v2):
+            return False
+
+    return True
+
 def read_or_new_pickle(path, default):
     if os.path.isfile(path):
         with open(path, "rb") as f:
@@ -119,6 +133,33 @@ def read_or_new_pickle(path, default):
         pickle.dump(default, f)
     return default
 
+
+def is_similar(image1, image2):
+    return (image1.shape == image2.shape and not(np.bitwise_xor(image1,image2).any()))
+
+updatedFrame = False
+def chosenFrameSubroutine(path):
+    global updatedFrame
+
+    fileList = ["seq_05_pyramid_0600_0026", "seq_04_sphere_0300_0121", "seq_03_jump_0300_0062", "seq_02_cube_0500_0038", "seq_02_cube_0300_0019", "seq_02_cube_0100_0013", "seq_07_end_0200_0073", "seq_06_reverse_0700_0010", "seq_06_reverse_0600_0022", "seq_06_reverse_0400_0086", "seq_05_pyramid_0100_0045", "seq_05_pyramid_0300_0044", "seq_04_sphere_0100_0057", "seq_03_jump_0200_00-5", "seq_02_cube_0600_0184", "seq_01_intro_1600_0026", "seq_01_intro_1300_0058", "seq_01_intro_0300_0183", "seq_01_intro_0200_0145", "seq_01_intro_0100_0259"]
+    for file in fileList:
+        if (file in path):
+            # Upadate it
+            outputFolder = "/Users/ckierum/Assets/Renders/KeyFrames/"
+            outputPath = outputFolder + file + ".tif"
+
+            old = None
+            if (os.path.exists(outputPath)):
+                old = cv2.imread(outputPath)
+
+            new = cv2.imread(path)
+            if (old == None):
+                shutil.copy(path, outputFolder)
+                updatedFrame = True
+            elif (not is_similar(old, new)):
+                shutil.copy(path, outputPath)
+                updatedFrame = True
+
 for o in sorted(os.listdir(directory)):
     if os.path.isdir(os.path.join(directory, o)):
         shotCount += 1
@@ -126,7 +167,7 @@ for o in sorted(os.listdir(directory)):
         renderPath = findValidRenderPath(fullPath_ext)
         if (renderPath == None):
             noRenderCount += 1
-            print(o + " has no render found")
+            #print(o + " has no render found")
         else:
             validity = renderPath["SUS"]
             fileList = renderPath["LIST"]
@@ -134,11 +175,13 @@ for o in sorted(os.listdir(directory)):
             size = (firstimg.shape[1], firstimg.shape[0])
             renderFolderName = renderPath["renderFolder"]
 
+            renderPath["attemptKey"] = "divx"
+
             metatdataFile = fullPath_ext + "/renderMeta.pkl"
             metadata = read_or_new_pickle(metatdataFile, {})
 
             refreshMetadata = ""
-            if (metadata == renderPath):
+            if (dicsEqualCompringKeys(metadata, renderPath, ["SUS", "TS", "renderFolder", "attemptKey"])):
                 refreshMetadata = " Already Rendered! (Skipped)"
 
             corruptedStr = ""
@@ -154,10 +197,12 @@ for o in sorted(os.listdir(directory)):
             safety.safetyAsserts(outputToFolder)
 
 
-            fourcc = cv2.VideoWriter_fourcc('h','2','6','4')
+            #RV24
+            fourcc = cv2.VideoWriter_fourcc('D', 'I', 'V', 'X')
             out = cv2.VideoWriter(localTemp, fourcc, 24.0, size, True)
             assert(out != None)
             for filename in fileList:
+                chosenFrameSubroutine(filename)
                 img = cv2.imread(filename)
                 out.write(img)
 
@@ -176,3 +221,6 @@ print("Rendered Shots: " + str(round(renderPerc * 100)) + " %")
 
 corruptedPerc = (float)(corruptedRenderCount) / (float)(shotCount - noRenderCount)
 print("Of those: " + str(round(corruptedPerc * 100))+ "% of them are corrupted")
+
+if (updatedFrame):
+    print("There were Key Frame Updates")

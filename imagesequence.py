@@ -117,7 +117,8 @@ for arg in sys.argv:
 #compositeFramesInFolder("/Users/ckierum/LocalSync/production/assets/group_3/shot/seq_06_tada_0100/renders/5_05_2020_render/images/masterLayer")
 #compositeFramesInFolder("/Users/ckierum/LocalSync/production/assets/group_3/shot/seq_06_tada_0100/renders/5_05_2020_v2_render/images/masterLayer")
 #compositeFramesInFolder("/Users/ckierum/LocalSync/production/assets/group_3/shot/seq_06_tada_0100/renders/5_05_2020_v3_render/images/masterLayer")
-compositeFramesInFolder("/Users/ckierum/localSync/production/assets/group_2/shot/seq_05_pyramid_0600/renders/quickRenderTestTwoPlzDontFail/images")
+#compositeFramesInFolder("/Users/ckierum/localSync/production/assets/group_2/shot/seq_05_pyramid_0600/renders/quickRenderTestTwoPlzDontFail/images")
+compositeFramesInFolder("/Users/ckierum/localSync45/production/lighting/paths/ntThreeeThreeTwo/images/masterLayer")
 
 '''
 compositeFramesInFolder(shotsFolder + "/seq_01_intro_0100/final/images")
